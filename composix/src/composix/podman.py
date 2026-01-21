@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import getopt
 import subprocess
+import signal
 
 from composix.util import LogLevel, log, options
 from composix.images import Image
@@ -96,7 +97,15 @@ def save(imgs: list[Image], argv: list[str]) -> None:
 
     cmd.append("--multi-image-archive")
 
-    subprocess.run(cmd, check=False)
+    log(f"Running podman with: {cmd}", LogLevel.DEBUG)
+    proc = subprocess.Popen(cmd)
+
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        log(f"Caught SIGINT, forwarding to podman", LogLevel.INFO)
+        proc.send_signal(signal.SIGINT)
+        proc.wait()
 
 
 def compose(compose_file: str, argv: list[str]) -> None:
@@ -113,7 +122,14 @@ def compose(compose_file: str, argv: list[str]) -> None:
     cmd = ["podman-compose", "--file", compose_file, *argv[1:]]
 
     log(f"Running podman-compose with: {cmd}", LogLevel.DEBUG)
-    subprocess.run(cmd, check=False)
+    proc = subprocess.Popen(cmd)
+
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        log(f"Caught SIGINT, forwarding to podman-compose", LogLevel.INFO)
+        proc.send_signal(signal.SIGINT)
+        proc.wait()
 
 
 def get_subcmd(argv: list[str]) -> str | None:
