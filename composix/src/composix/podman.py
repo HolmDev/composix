@@ -160,7 +160,10 @@ def get_subcmd(argv: list[str]) -> str | None:
     opts, rest = getopt.getopt(argv[1:], "hvf:p:", longopts)
     for opt, _ in opts:
         if opt == "-f":
-            log("Do not attempt to set --file yourself, it is managed by the wrapper", LogLevel.ERROR)
+            log(
+                "Do not attempt to set --file yourself, it is managed by the wrapper",
+                LogLevel.ERROR,
+            )
         elif opt == "--no-ansi":
             options.ansi = False
         elif opt == "--verbose":

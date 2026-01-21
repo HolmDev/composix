@@ -14,7 +14,7 @@ class Options:
     """Stores the global options."""
 
     ansi = True
-    verbose = True
+    verbose = False
 
 
 options = Options()
@@ -36,14 +36,20 @@ def log(msg: str, level: LogLevel) -> None:
     level (LogLevel): The level of the message
 
     """
+
+    if (level == LogLevel.DEBUG) and not options.verbose:
+        return
+
     name = (ANSI_MAGENTA + ANSI_BOLD) if options.ansi else ""
     reset = ANSI_NORM if options.ansi else ""
 
     lvl_name, lvl = {
-            LogLevel.INFO: ("INFO", ANSI_BOLD + ANSI_BLUE),
-            LogLevel.DEBUG: ("DEBUG", ANSI_BOLD + ANSI_GREEN),
-            LogLevel.ERROR: ("ERROR", ANSI_BOLD + ANSI_RED),
-            }[level]
+        LogLevel.INFO: ("INFO", ANSI_BOLD + ANSI_BLUE),
+        LogLevel.DEBUG: ("DEBUG", ANSI_BOLD + ANSI_GREEN),
+        LogLevel.ERROR: ("ERROR", ANSI_BOLD + ANSI_RED),
+    }[level]
+
+    lvl = lvl if options.ansi else ""
 
     sys.stderr.write(f"[{name}composix{reset}] {lvl}{lvl_name}{reset}: {msg}\n")
 

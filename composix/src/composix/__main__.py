@@ -42,7 +42,10 @@ def main() -> None:
     image_envstr = os.getenv("COMPOSIX_IMAGES")
 
     if not compose_file:
-        log("The compose file derivation path is missing, are you sure you are running it from the `composix.lib.mkWrapper'", LogLevel.ERROR)
+        log(
+            "The compose file derivation path is missing, are you sure you are running it from the `composix.lib.mkWrapper'",
+            LogLevel.ERROR,
+        )
 
     if not image_envstr:
         log("The image derivation paths are missing", LogLevel.ERROR)
