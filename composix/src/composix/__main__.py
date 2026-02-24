@@ -54,7 +54,11 @@ def main() -> None:
 
     if subcmd in REQUIRES_LOAD:
         log("Loading image derivations", LogLevel.INFO)
+        loaded_refs = podman.get_loaded_refs()
         for img in imgs:
+            if img.nref in loaded_refs:
+                log(f"Skipping {img.ref}, since it is already loaded", LogLevel.INFO)
+                continue
             podman.load(img)
             podman.retag(img)
 

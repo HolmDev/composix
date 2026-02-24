@@ -103,7 +103,7 @@ def save(imgs: list[Image], argv: list[str]) -> None:
     try:
         proc.wait()
     except KeyboardInterrupt:
-        log(f"Caught SIGINT, forwarding to podman", LogLevel.INFO)
+        log("Caught SIGINT, forwarding to podman", LogLevel.INFO)
         proc.send_signal(signal.SIGINT)
         proc.wait()
 
@@ -127,7 +127,7 @@ def compose(compose_file: str, argv: list[str]) -> None:
     try:
         proc.wait()
     except KeyboardInterrupt:
-        log(f"Caught SIGINT, forwarding to podman-compose", LogLevel.INFO)
+        log("Caught SIGINT, forwarding to podman-compose", LogLevel.INFO)
         proc.send_signal(signal.SIGINT)
         proc.wait()
 
@@ -186,3 +186,21 @@ def get_subcmd(argv: list[str]) -> str | None:
             options.verbose = True
 
     return rest[0] if rest else None
+
+
+def get_loaded_refs() -> list[str]:
+    """Fetches loaded image references from podman
+
+    Returns
+    -------
+    list[Str]: Loaded image references
+
+    """
+    cmd = ["podman", "image", "ls", "--format={{index .Names 0}}"]
+
+    subproc = subprocess.run(cmd, check=False, capture_output=True, text=True)
+
+    if subproc.returncode != 0:
+        log("podman image ls failed", LogLevel.ERROR)
+
+    return subproc.stdout.splitlines()
